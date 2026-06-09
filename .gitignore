@@ -1,0 +1,16 @@
+.workbuddy/
+deploy/
+__pycache__/
+*.py
+*.pyc
+.vbs
+.bat
+.command
+.sh
+.plist
+.lnk
+server.log
+恢复数据.html
+pdfdump.py
+pdf2img.py
+*.png
