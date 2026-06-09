@@ -980,7 +980,7 @@
       "riskController": "焦华梅"
     }
   ],
-  "_version": 23,
+  "_version": 29,
   "journals": [
     {
       "id": "id_1779866879354_vgr7da",
@@ -5969,6 +5969,23 @@
   ],
   "projects": [
     {
+      "id": "id_1780892977789_bwlgee",
+      "notes": "头部企业：熵基科技 2025年全年：营业收入达21.33亿元；毛利率为50.11%；净利润2.15亿元；",
+      "createdAt": "2026-06-08T04:29:37.789Z",
+      "loanScale": "",
+      "updatedAt": "2026-06-08T04:52:04.240Z",
+      "keyFinance": "",
+      "companyName": "一脉通（深圳）智能科技有限公司",
+      "supplyChain": "",
+      "keyPersonnel": " 薛喜柱 88.8%",
+      "businessModel": "18年成立：血管识别、掌静脉识别、人脸识别、虹膜识别技术相关的智能模组。\n“多模态生物识别一体化”上的核心技术突破、国家级创新奖项的背书以及高速增长的营收规模",
+      "personnelSite": "深圳：\n河源：\n昆山：",
+      "revenueProfit": "",
+      "equityStructure": " 薛喜柱45%\n脉象科技合伙20%（gp 薛喜柱实控公司，陈军40.5%、）\n月脉合伙20%（gp 薛喜柱实控公司，股份均为薛所有）\n日脉合伙10%（gp 薛喜柱实控公司，股份均为薛所有）",
+      "financingHistory": "",
+      "relatedCompanies": "河源一脉通：100%子公司；\n元脉科技：100%，23成立，\n脉鑫科技：100%，23成立，\n一脉云：100%，22成立；\n昆山一脉通：20%（另外80%是薛，麻亚翰25年出让80%股份给薛）"
+    },
+    {
       "id": "id_1780652745515_涌源",
       "notes": "",
       "createdAt": "2026-06-05T17:45:45.515889",
@@ -8895,13 +8912,47 @@
   ],
   "processes": [
     {
-      "id": "id_1779866144758_jz9wem",
+      "id": "id_1780892977787_41z0kx",
       "year": "2026",
       "ddDate": "",
       "progress": "收资料",
+      "createdAt": "2026-06-08T04:29:37.788Z",
+      "emailDate": "",
+      "updatedAt": "2026-06-08T04:29:37.788Z",
+      "visitDate": "2026-06-08",
+      "bankReport": "",
+      "reviewDate": "",
+      "companyName": "一脉通（深圳）智能科技有限公司",
+      "loanRelease": "",
+      "contractDate": "",
+      "committeeDate": "",
+      "riskController": ""
+    },
+    {
+      "id": "id_1779958559914_0ye713",
+      "year": "",
+      "ddDate": "",
+      "progress": "收资料",
+      "createdAt": "2026-05-28T08:55:59.915Z",
+      "emailDate": "",
+      "updatedAt": "2026-05-28T08:55:59.915Z",
+      "visitDate": "2026-05-28",
+      "bankReport": "",
+      "reviewDate": "",
+      "companyName": "深圳猿金刚新材料有限公司",
+      "loanRelease": "",
+      "contractDate": "",
+      "committeeDate": "",
+      "riskController": ""
+    },
+    {
+      "id": "id_1779866144758_jz9wem",
+      "year": "2026",
+      "ddDate": "",
+      "progress": "业务暂缓",
       "createdAt": "2026-05-27T07:15:44.758Z",
       "emailDate": "",
-      "updatedAt": "2026-05-27T07:15:44.758Z",
+      "updatedAt": "2026-06-05T10:28:59.219Z",
       "visitDate": "2026-05-26",
       "bankReport": "",
       "reviewDate": "",
@@ -8915,10 +8966,10 @@
       "id": "id_1779866126794_gn8im8",
       "year": "2026",
       "ddDate": "",
-      "progress": "收资料",
+      "progress": "写报告",
       "createdAt": "2026-05-27T07:15:26.794Z",
       "emailDate": "",
-      "updatedAt": "2026-05-27T07:15:26.794Z",
+      "updatedAt": "2026-06-08T04:28:19.745Z",
       "visitDate": "2026-05-25",
       "bankReport": "",
       "reviewDate": "",
@@ -8932,10 +8983,10 @@
       "id": "id_1779678733779_vpv4bh",
       "year": "2026",
       "ddDate": "",
-      "progress": "放款流程",
+      "progress": "已放款",
       "createdAt": "2026-05-25T03:12:13.779Z",
       "emailDate": "",
-      "updatedAt": "2026-05-25T03:25:54.601Z",
+      "updatedAt": "2026-06-08T04:28:27.258Z",
       "visitDate": "2026-05-25",
       "bankReport": "",
       "reviewDate": "",
@@ -11686,23 +11737,6 @@
       "contractDate": "",
       "committeeDate": "",
       "riskController": ""
-    },
-    {
-      "id": "id_1779958559914_0ye713",
-      "year": "",
-      "ddDate": "",
-      "progress": "收资料",
-      "createdAt": "2026-05-28T08:55:59.915Z",
-      "emailDate": "",
-      "updatedAt": "2026-05-28T08:55:59.915Z",
-      "visitDate": "2026-05-28",
-      "bankReport": "",
-      "reviewDate": "",
-      "companyName": "深圳猿金刚新材料有限公司",
-      "loanRelease": "",
-      "contractDate": "",
-      "committeeDate": "",
-      "riskController": ""
     }
   ],
   "performance": {
@@ -11962,7 +11996,7 @@
           "adjustedAmount": 200
         },
         {
-          "fee": 10.0,
+          "fee": 10,
           "amount": 400,
           "loanId": "id_1779350506070_0vk6hc",
           "feeRate": 0.025,
@@ -11982,7 +12016,7 @@
           "adjustedAmount": 500
         },
         {
-          "fee": 5.0,
+          "fee": 5,
           "amount": 200,
           "loanId": "id_1779350506070_qk9edt",
           "feeRate": 0.025,
@@ -11992,7 +12026,7 @@
           "adjustedAmount": 200
         },
         {
-          "fee": 10.0,
+          "fee": 10,
           "amount": 400,
           "loanId": "id_1779350506070_tmevfz",
           "feeRate": 0.025,
