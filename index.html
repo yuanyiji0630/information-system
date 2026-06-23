@@ -251,8 +251,8 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); disp
 .scroll-btn:active{transform:scale(0.92);}
 .scroll-btn.disabled{opacity:0.3;cursor:default;pointer-events:none;}
 /* 公司名称：条件截断 */
-.td-company{max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.td-company.no-trunc{max-width:none;text-overflow:clip;white-space:normal;}
+.td-company{white-space:nowrap;min-width:120px;}
+.td-company.no-trunc{max-width:none;white-space:nowrap;}
 /* 年份/进度列完整展示 */
 .td-year{white-space:nowrap;min-width:50px;}
 .td-progress{white-space:nowrap;}
