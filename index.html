@@ -277,7 +277,6 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); disp
       <button class="btn btn-sm" onclick="exportCSV(true)" title="导出当前筛选结果">导出筛选</button>
       <button class="btn btn-sm" onclick="exportCSV()" title="导出全部数据">导出全部</button>
       <button class="btn btn-sm btn-success" onclick="exportAllXLSX()" title="一键导出全部模块为Excel多Sheet文件">📊 全部导出</button>
-      <button class="btn btn-sm btn-icon danger" onclick="resetData()">重置</button>
       <button class="btn btn-primary" id="btnAdd">＋ 新增</button>
     </div>
   </div>
@@ -685,17 +684,15 @@ function renderProjects(area) {
   h += '<th style="width:180px">主营及模式</th>';
   h += '<th style="width:110px">贷款规模</th>';
   h += '<th style="width:100px">备注</th>';
-  h += '<th style="width:80px">操作</th>';
   h += '</tr></thead><tbody>';
   items.forEach((p, idx) => {
-    h += '<tr ondblclick="editProject(\''+p.id+'\')">';
-    h += '<td style="color:var(--text-hint);font-size:12px;text-align:center">'+(idx+1)+'</td>';
-    h += '<td><strong>'+esc(p.companyName)+'</strong></td>';
-    h += '<td><span class="cell-text" title="'+escAttr(p.businessModel)+'">'+esc(trunc(p.businessModel,25))+'</span></td>';
-    h += '<td><span class="cell-text" title="'+escAttr(p.loanScale)+'">'+esc(trunc(p.loanScale,18))+'</span></td>';
-    h += '<td><span class="cell-text" title="'+escAttr(p.notes)+'">'+esc(trunc(p.notes,15))+'</span></td>';
-    h += '<td><button class="btn btn-sm" onclick="event.stopPropagation();editProject(\''+p.id+'\')">编辑</button> <button class="btn btn-sm btn-icon danger" onclick="event.stopPropagation();deleteProject(\''+p.id+'\')">删</button></td>';
-    h += '</tr>';
+    h += '<tr ondblclick="editProject(\''+p.id+'\')" oncontextmenu="confirmDelete(\'project\',\''+p.id+'\',\''+escAttr(p.companyName)+'\')">';
+      h += '<td style="color:var(--text-hint);font-size:12px;text-align:center">'+(idx+1)+'</td>';
+      h += '<td><strong>'+esc(p.companyName)+'</strong></td>';
+      h += '<td><span class="cell-text" title="'+escAttr(p.businessModel)+'">'+esc(trunc(p.businessModel,25))+'</span></td>';
+      h += '<td><span class="cell-text" title="'+escAttr(p.loanScale)+'">'+esc(trunc(p.loanScale,18))+'</span></td>';
+      h += '<td><span class="cell-text" title="'+escAttr(p.notes)+'">'+esc(trunc(p.notes,15))+'</span></td>';
+      h += '</tr>';
   });
   h += '</tbody></table></div>';
   h += '<div class="bottom-summary">共 <strong>'+items.length+'</strong> 家公司</div>';
@@ -750,11 +747,11 @@ function renderProcesses(area) {
     {key:'progress',label:'进度',type:'values',values:PROGRESS_OPTIONS}
   ], state.data.processes);
   h += '<div class="table-wrap"><table><thead><tr>';
-  h += '<th style="width:140px">公司名称</th><th style="width:50px">年份</th><th style="width:90px">拜访时间</th><th style="width:85px">进度</th><th style="width:70px">风控</th><th style="width:90px">报风控</th><th style="width:80px">尽调</th><th style="width:80px">审结</th><th style="width:80px">上会</th><th style="width:80px">签合同</th><th style="width:90px">报银行</th><th style="width:80px">放款</th><th style="width:80px">操作</th>';
+  h += '<th style="width:140px">公司名称</th><th style="width:50px">年份</th><th style="width:90px">拜访时间</th><th style="width:85px">进度</th><th style="width:70px">风控</th><th style="width:90px">报风控</th><th style="width:80px">尽调</th><th style="width:80px">审结</th><th style="width:80px">上会</th><th style="width:80px">签合同</th><th style="width:90px">报银行</th><th style="width:80px">放款</th>';
   h += '</tr></thead><tbody>';
   items.forEach(p => {
     const bc = ['已放款','已结清'].includes(p.progress)?'success':['风控尽调','放款流程'].includes(p.progress)?'info':['风控暂缓','业务暂缓','客户意愿不足'].includes(p.progress)?'danger':'warning';
-    h += '<tr ondblclick="editProcess(\''+p.id+'\')">';
+    h += '<tr ondblclick="editProcess(\''+p.id+'\')" oncontextmenu="confirmDelete(\'process\',\''+p.id+'\',\''+escAttr(p.companyName)+'\')">';
     h += '<td><strong>'+esc(p.companyName)+'</strong></td>';
     h += '<td>'+fmt(p.year)+'</td>';
     h += '<td>'+fmtDate(p.visitDate)+'</td>';
@@ -767,7 +764,6 @@ function renderProcesses(area) {
     h += '<td>'+fmtDate(p.contractDate)+'</td>';
     h += '<td>'+esc(p.bankReport)+'</td>';
     h += '<td>'+esc(p.loanRelease)+'</td>';
-    h += '<td><button class="btn btn-sm" onclick="editProcess(\''+p.id+'\')">编辑</button> <button class="btn btn-sm btn-icon danger" onclick="deleteProcess(\''+p.id+'\')">删</button></td>';
     h += '</tr>';
   });
   h += '</tbody></table></div>';
@@ -831,7 +827,7 @@ function renderLoans(area) {
     {key:'riskController',label:'风控',type:'data',items:state.data.loans}
   ], state.data.loans);
   h += '<div class="table-wrap"><table><thead><tr>';
-  h += '<th style="width:130px">公司名称</th><th style="width:70px">金额(万)</th><th style="width:65px">月还(万)</th><th style="width:70px">保证金比例</th><th style="width:55px">保证金</th><th style="width:65px">已还(万)</th><th style="width:65px">敞口(万)</th><th style="width:70px">担保费率</th><th style="width:85px">放款时间</th><th style="width:85px">银行</th><th style="width:80px">支行</th><th style="width:50px">利率</th><th style="width:85px">到期日</th><th style="width:55px">风控</th><th style="width:80px">客户经理</th><th style="width:70px">操作</th>';
+  h += '<th style="width:130px">公司名称</th><th style="width:70px">金额(万)</th><th style="width:65px">月还(万)</th><th style="width:70px">保证金比例</th><th style="width:55px">保证金</th><th style="width:65px">已还(万)</th><th style="width:65px">敞口(万)</th><th style="width:70px">担保费率</th><th style="width:85px">放款时间</th><th style="width:85px">银行</th><th style="width:80px">支行</th><th style="width:50px">利率</th><th style="width:85px">到期日</th><th style="width:55px">风控</th><th style="width:80px">客户经理</th>';
   h += '</tr></thead><tbody>';
   items.forEach(p => {
     const a=parseFloat(p.amount)||0, depositPct=parseFloat(p.deposit)||0;
@@ -846,7 +842,7 @@ function renderLoans(area) {
     const overdue = !isSettled && p.maturityDate && new Date(p.maturityDate)<new Date() && exp>0;
     const nearExpiry = !overdue && !isSettled && p.maturityDate && new Date(p.maturityDate)>=now && new Date(p.maturityDate)<=twoMonthsLater && exp>0;
     const rowClass = isSettled ? 'alert-row' : overdue ? 'alert-row' : nearExpiry ? 'near-expiry-row' : '';
-    h += '<tr class="'+rowClass+'" ondblclick="editLoan(\''+p.id+'\')" style="cursor:pointer'+(isSettled?';opacity:0.6':'')+'">';
+    h += '<tr class="'+rowClass+'" ondblclick="editLoan(\''+p.id+'\')" oncontextmenu="confirmDelete(\'loan\',\''+p.id+'\',\''+escAttr(p.companyName)+'\')" style="cursor:pointer'+(isSettled?';opacity:0.6':'')+'">';
     h += '<td><strong>'+esc(p.companyName)+'</strong>'+(isSettled?' ✓已结清':overdue?' ⚠':nearExpiry?' ⏰':'')+'</td>';
     h += '<td class="amount">'+num(a)+'</td>';
     h += '<td>'+fmt(p.monthlyRepay)+'</td>';
@@ -862,7 +858,6 @@ function renderLoans(area) {
     h += '<td>'+fmtDate(p.maturityDate)+'</td>';
     h += '<td>'+esc(p.riskController)+'</td>';
     h += '<td>'+esc(trunc(p.bankManager,8))+'</td>';
-    h += '<td><button class="btn btn-sm" onclick="editLoan(\''+p.id+'\')">编辑</button> <button class="btn btn-sm btn-icon danger" onclick="deleteLoan(\''+p.id+'\')">删</button></td>';
     h += '</tr>';
   });
   const sumAmount = items.reduce((s,i)=>s+(parseFloat(i.amount)||0),0);
@@ -924,16 +919,15 @@ function renderJournals(area) {
   if (state.filters.bank && state.filters.bank!=='all') items = items.filter(i => (i.bank||'').trim()===state.filters.bank);
   state.filteredItems = items;
   h += '<div class="table-wrap"><table><thead><tr>';
-  h += '<th style="width:7%">日期</th><th style="width:36%">事项</th><th style="width:18%">客户</th><th style="width:18%">银行</th><th style="width:12%">备注</th><th style="width:9%">操作</th>';
+  h += '<th style="width:7%">日期</th><th style="width:36%">事项</th><th style="width:18%">客户</th><th style="width:18%">银行</th><th style="width:12%">备注</th>';
   h += '</tr></thead><tbody>';
   items.forEach(p => {
-    h += '<tr ondblclick="editJournal(\''+p.id+'\')">';
+    h += '<tr ondblclick="editJournal(\''+p.id+'\')" oncontextmenu="confirmDelete(\'journal\',\''+p.id+'\',\''+escAttr(p.client||p.matter)+'\')">';
     h += '<td>'+fmtDate(p.date)+'</td>';
     h += '<td>'+esc(p.matter)+'</td>';
     h += '<td>'+esc(p.client)+'</td>';
     h += '<td>'+esc(p.bank)+'</td>';
     h += '<td>'+esc(trunc(p.notes,25))+'</td>';
-    h += '<td><button class="btn btn-sm" onclick="editJournal(\''+p.id+'\')">编辑</button> <button class="btn btn-sm btn-icon danger" onclick="deleteJournal(\''+p.id+'\')">删</button></td>';
     h += '</tr>';
   });
   h += '</tbody></table></div>';
@@ -1061,15 +1055,15 @@ function renderPerformance(area) {
 
   // 季度明细表格
   h += '<div class="table-wrap"><table id="perfTable"><thead><tr>';
-  h += '<th style="width:140px">公司名称</th><th style="width:70px">放款额度</th><th style="width:90px">考核系数</th><th style="width:80px">折算额度</th><th style="width:70px">担保费率</th><th style="width:80px">担保费</th><th style="width:50px">季度</th><th style="width:60px">操作</th>';
+  h += '<th style="width:140px">公司名称</th><th style="width:70px">放款额度</th><th style="width:90px">考核系数</th><th style="width:80px">折算额度</th><th style="width:70px">担保费率</th><th style="width:80px">担保费</th><th style="width:50px">季度</th>';
   h += '</tr></thead><tbody>';
 
   ['Q1','Q2','Q3','Q4'].forEach(q => {
     const items = quarters[q];
     if (items.length === 0) return;
-    h += '<tr style="background:#f0f4ff;font-weight:600"><td colspan="8">' + q + '（' + items.length + '笔，合计 ' + num(items.reduce((s,p)=>s+(parseFloat(p.adjustedAmount)||0),0)) + ' 万）</td></tr>';
+    h += '<tr style="background:#f0f4ff;font-weight:600"><td colspan="7">' + q + '（' + items.length + '笔，合计 ' + num(items.reduce((s,p)=>s+(parseFloat(p.adjustedAmount)||0),0)) + ' 万）</td></tr>';
     items.forEach((p, idx) => {
-      h += '<tr ondblclick="editPerfProject(\'' + year + '\',\'' + p.loanId + '\')" style="cursor:pointer">';
+      h += '<tr ondblclick="editPerfProject(\'' + year + '\',\'' + p.loanId + '\')" oncontextmenu="confirmDelete(\'perf\',\'' + p.loanId + '\',\'' + escAttr(p.companyName) + '\')" style="cursor:pointer">';
       h += '<td><strong>' + esc(p.companyName) + '</strong></td>';
       h += '<td class="amount">' + num(p.amount) + '</td>';
       h += '<td><input type="number" step="0.1" min="0.5" max="2" value="' + (p.coefficient || 1) + '" style="width:60px;padding:4px;border:1px solid var(--border);border-radius:4px;text-align:center" onchange="updatePerfCoeff(\'' + year + '\',\'' + p.loanId + '\',this.value)" title="考核系数：新客户专精特新=1，新客户<500万=1.2"></td>';
@@ -1077,7 +1071,6 @@ function renderPerformance(area) {
       h += '<td><input type="number" step="0.01" min="0.5" max="5" value="' + ((p.feeRate || 0.025) * 100).toFixed(2) + '" style="width:65px;padding:4px;border:1px solid var(--border);border-radius:4px;text-align:center" onchange="updatePerfFee(\'' + year + '\',\'' + p.loanId + '\',this.value)" title="担保费率(%)">%</td>';
       h += '<td class="amount" id="perfFee_' + p.loanId + '">' + num(p.fee) + '</td>';
       h += '<td>' + p.quarter + '</td>';
-      h += '<td><button class="btn btn-sm btn-icon danger" onclick="removePerfProject(\'' + year + '\',\'' + p.loanId + '\')" title="从业绩统计中移除（不影响放款管理）">✕</button></td>';
       h += '</tr>';
     });
   });
@@ -1265,6 +1258,22 @@ function saveForm(type) {
   window['edit'+m] = function(id) { state.editingId = id; const p = state.data[types[i]].find(x=>x.id===id)||{}; showForm('编辑',types[i],p); };
   window['delete'+m] = function(id) { if(!confirm('确认删除？此操作不可恢复。'))return; state.data[types[i]] = state.data[types[i]].filter(x=>x.id!==id); saveData(); toast('已删除','success'); };
 });
+/* 右键删除确认 */
+window.confirmDelete = function(type, id, name) {
+  event.preventDefault();
+  if (!name) name = '';
+  if (confirm('确认删除【' + name + '】？此操作不可恢复。')) {
+    if (type === 'perf') {
+      // 业绩统计：从业绩中移除（不删放款）
+      const year = new Date().getFullYear();
+      const perf = state.data.performance;
+      if (perf && perf[year]) perf[year].projects = perf[year].projects.filter(p => p.loanId !== id);
+      saveData(); toast('已移除','success');
+    } else {
+      window['delete' + type.charAt(0).toUpperCase() + type.slice(1)](id);
+    }
+  }
+};
 
 /* ===== Add Button ===== */
 $('btnAdd').addEventListener('click', function() {
@@ -1395,10 +1404,6 @@ function exportCSV(filtered) {
   const b = new Blob([csv],{type:'text/csv;charset=utf-8'});
   const a = document.createElement('a'); a.href=URL.createObjectURL(b); a.download=t+'_'+(filtered?'筛选_':'')+new Date().toISOString().slice(0,10)+'.csv'; a.click();
   toast((filtered?'筛选结果已导出':'全部数据已导出'),'success');
-}function resetData() {
-  if (!window.INITIAL_DATA?.projects) { toast('未找到初始数据','error'); return; }
-  if (!confirm('将清除所有修改，恢复为初始数据。是否继续？')) return;
-  localStorage.removeItem(STORAGE_KEY); loadData().then(()=>{ updateBadges(); render(); toast('已重置','success'); });
 }
 
 /* ===== Keyboard ===== */
