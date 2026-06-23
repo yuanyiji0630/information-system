@@ -244,6 +244,18 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); disp
   .filter-bar { flex-wrap: wrap; gap: 8px; padding: 10px; }
   .form-panel { width: 95vw; }
 }
+/* 横向滑动按钮 */
+.scroll-btn-wrap{display:flex;justify-content:center;align-items:center;gap:12px;padding:8px 0 4px;user-select:none;}
+.scroll-btn{width:36px;height:36px;border-radius:50%;border:1.5px solid var(--border);background:var(--surface);color:var(--text-secondary);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all var(--transition-fast);box-shadow:var(--shadow-sm);}
+.scroll-btn:hover{background:var(--primary-light);color:var(--primary);border-color:var(--primary);box-shadow:var(--shadow);}
+.scroll-btn:active{transform:scale(0.92);}
+.scroll-btn.disabled{opacity:0.3;cursor:default;pointer-events:none;}
+/* 公司名称：条件截断 */
+.td-company{max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.td-company.no-trunc{max-width:none;text-overflow:clip;white-space:normal;}
+/* 年份/进度列完整展示 */
+.td-year{white-space:nowrap;min-width:50px;}
+.td-progress{white-space:nowrap;}
 </style>
 </head>
 <body>
@@ -688,15 +700,17 @@ function renderProjects(area) {
   items.forEach((p, idx) => {
     h += '<tr ondblclick="editProject(\''+p.id+'\')" oncontextmenu="confirmDelete(\'project\',\''+p.id+'\',\''+escAttr(p.companyName)+'\')">';
       h += '<td style="color:var(--text-hint);font-size:12px;text-align:center">'+(idx+1)+'</td>';
-      h += '<td><strong>'+esc(p.companyName)+'</strong></td>';
+      h += '<td><strong class="'+(p.companyName&&p.companyName.length<=15?'td-company no-trunc':'td-company')+'">' +esc(p.companyName)+'</strong></td>';
       h += '<td><span class="cell-text" title="'+escAttr(p.businessModel)+'">'+esc(trunc(p.businessModel,25))+'</span></td>';
       h += '<td><span class="cell-text" title="'+escAttr(p.loanScale)+'">'+esc(trunc(p.loanScale,18))+'</span></td>';
       h += '<td><span class="cell-text" title="'+escAttr(p.notes)+'">'+esc(trunc(p.notes,15))+'</span></td>';
       h += '</tr>';
   });
   h += '</tbody></table></div>';
+  h += '<div class="scroll-btn-wrap"><button class="scroll-btn" onclick="scrollTable(this.parentNode,-1)" title="向左滑动">&#9664;</button><button class="scroll-btn" onclick="scrollTable(this.parentNode,1)" title="向右滑动">&#9654;</button></div>';
   h += '<div class="bottom-summary">共 <strong>'+items.length+'</strong> 家公司</div>';
   area.innerHTML = h;
+  setTimeout(function(){ var tw=area.querySelector('.table-wrap'); var bw=area.querySelector('.scroll-btn-wrap'); if(tw&&bw) updateScrollButtons(tw,bw); }, 80);
 }
 
 function showProjectDetail(id) {
@@ -747,15 +761,15 @@ function renderProcesses(area) {
     {key:'progress',label:'进度',type:'values',values:PROGRESS_OPTIONS}
   ], state.data.processes);
   h += '<div class="table-wrap"><table><thead><tr>';
-  h += '<th style="width:140px">公司名称</th><th style="width:50px">年份</th><th style="width:90px">拜访时间</th><th style="width:85px">进度</th><th style="width:70px">风控</th><th style="width:90px">报风控</th><th style="width:80px">尽调</th><th style="width:80px">审结</th><th style="width:80px">上会</th><th style="width:80px">签合同</th><th style="width:90px">报银行</th><th style="width:80px">放款</th>';
+  h += '<th style="width:160px">公司名称</th><th style="width:60px">年份</th><th style="width:100px">拜访时间</th><th style="width:95px">进度</th><th style="width:70px">风控</th><th style="width:90px">报风控</th><th style="width:80px">尽调</th><th style="width:80px">审结</th><th style="width:80px">上会</th><th style="width:80px">签合同</th><th style="width:90px">报银行</th><th style="width:80px">放款</th>';
   h += '</tr></thead><tbody>';
   items.forEach(p => {
     const bc = ['已放款','已结清'].includes(p.progress)?'success':['风控尽调','放款流程'].includes(p.progress)?'info':['风控暂缓','业务暂缓','客户意愿不足'].includes(p.progress)?'danger':'warning';
     h += '<tr ondblclick="editProcess(\''+p.id+'\')" oncontextmenu="confirmDelete(\'process\',\''+p.id+'\',\''+escAttr(p.companyName)+'\')">';
-    h += '<td><strong>'+esc(p.companyName)+'</strong></td>';
-    h += '<td>'+fmt(p.year)+'</td>';
+    h += '<td><strong class="'+(p.companyName&&p.companyName.length<=15?'td-company no-trunc':'td-company')+'">' +esc(p.companyName)+'</strong></td>';
+    h += '<td class="td-year">'+fmt(p.year)+'</td>';
     h += '<td>'+fmtDate(p.visitDate)+'</td>';
-    h += '<td>'+badge(bc,p.progress)+'</td>';
+    h += '<td class="td-progress">'+badge(bc,p.progress)+'</td>';
     h += '<td>'+esc(p.riskController)+'</td>';
     h += '<td>'+fmtDate(p.emailDate)+'</td>';
     h += '<td>'+fmtDate(p.ddDate)+'</td>';
@@ -843,7 +857,7 @@ function renderLoans(area) {
     const nearExpiry = !overdue && !isSettled && p.maturityDate && new Date(p.maturityDate)>=now && new Date(p.maturityDate)<=twoMonthsLater && exp>0;
     const rowClass = isSettled ? 'alert-row' : overdue ? 'alert-row' : nearExpiry ? 'near-expiry-row' : '';
     h += '<tr class="'+rowClass+'" ondblclick="editLoan(\''+p.id+'\')" oncontextmenu="confirmDelete(\'loan\',\''+p.id+'\',\''+escAttr(p.companyName)+'\')" style="cursor:pointer'+(isSettled?';opacity:0.6':'')+'">';
-    h += '<td><strong>'+esc(p.companyName)+'</strong>'+(isSettled?' ✓已结清':overdue?' ⚠':nearExpiry?' ⏰':'')+'</td>';
+    h += '<td><strong class="'+(p.companyName&&p.companyName.length<=15?'td-company no-trunc':'td-company')+'">' +esc(p.companyName)+'</strong>'+(isSettled?' ✓已结清':overdue?' ⚠':nearExpiry?' ⏰':'')+'</td>';
     h += '<td class="amount">'+num(a)+'</td>';
     h += '<td>'+fmt(p.monthlyRepay)+'</td>';
     h += '<td style="text-align:center">'+(depositPct||0)+'%</td>';
@@ -871,7 +885,10 @@ function renderLoans(area) {
   const sumExp = sumAmount - sumRepaid - sumDeposit;
   h += '<tfoot><tr class="tfoot-row"><td>合计（'+items.length+'笔）</td><td class="amount">'+num(sumAmount)+'</td><td></td><td></td><td class="amount">'+num(sumDeposit)+'</td><td>'+num(sumRepaid)+'</td><td class="amount">'+(sumExp>0?num(sumExp):'0')+'</td><td colspan="9"></td></tr></tfoot>';
   h += '</tbody></table></div>';
+  h += '<div class="scroll-btn-wrap"><button class="scroll-btn" onclick="scrollTable(this.parentNode,-1)" title="向左滑动">&#9664;</button><button class="scroll-btn" onclick="scrollTable(this.parentNode,1)" title="向右滑动">&#9654;</button></div>';
+  h += '<div class="bottom-summary">共 <strong>'+items.length+'</strong> 笔记录</div>';
   area.innerHTML = h;
+  setTimeout(function(){ var tw=area.querySelector('.table-wrap'); var bw=area.querySelector('.scroll-btn-wrap'); if(tw&&bw) updateScrollButtons(tw,bw); }, 80);
 }
 
 /* ===== Module 4: Journals ===== */
@@ -1182,8 +1199,7 @@ function showForm(title, type, data={}) {
   if (type==='projects') {
     fields = '<div class="form-group"><label>公司名称 *</label><input id="f_companyName" value="'+escAttr(data.companyName||'')+'"></div>'
     +'<div class="form-row"><div class="form-group"><label>主营及模式</label><textarea id="f_businessModel">'+esc(data.businessModel||'')+'</textarea></div><div class="form-group"><label>人员场地</label><textarea id="f_personnelSite">'+esc(data.personnelSite||'')+'</textarea></div></div>'
-    +'<div class="form-row"><div class="form-group"><label>收入利润</label><textarea id="f_revenueProfit">'+esc(data.revenueProfit||'')+'</textarea></div><div class="form-group"><label>关键财务</label><textarea id="f_keyFinance">'+esc(data.keyFinance||'')+'</textarea></div></div>'
-    +'<div class="form-group"><label>供产销</label><div class="template-insert"><select onchange="insertTemplate(this,\'f_supplyChain\')"><option value="">-- 插入常用表述模板 --</option>'+TEMPLATES.map(t=>'<option value="'+t.id+'">'+t.name+'</option>').join('')+'</select></div><textarea id="f_supplyChain" style="min-height:100px">'+esc(data.supplyChain||'')+'</textarea></div>'
+    +'<div class="form-row"><div class="form-group"><label>收入利润 '<button class="btn btn-sm" style="margin-left:8px;font-size:11px;padding:3px 10px" onclick="insertRevenueTemplate()">插入年度模板</button></label><textarea id="f_revenueProfit" placeholder="点击左侧按钮自动填充">'+esc(data.revenueProfit||'')+'</textarea></div><div class="form-group"><label>关键财务</label><textarea id="f_keyFinance" placeholder="毛利率___%，净利率___%">+(data.keyFinance==''?(data.id?'':'毛利率___%，净利率___%'):esc(data.keyFinance))+'</textarea></div>'    +'<div class="form-group"><label>供产销</label><div class="template-insert"><select onchange="insertTemplate(this,\'f_supplyChain\')"><option value="">-- 插入常用表述模板 --</option>'+TEMPLATES.map(t=>'<option value="'+t.id+'">'+t.name+'</option>').join('')+'</select></div><textarea id="f_supplyChain" style="min-height:100px">'+esc(data.supplyChain||'')+'</textarea></div>'
     +'<div class="form-group"><label>贷款规模及贷款用途</label><textarea id="f_loanScale">'+esc(data.loanScale||'')+'</textarea></div>'
     +'<div class="form-group"><label>融资历程及计划</label><textarea id="f_financingHistory">'+esc(data.financingHistory||'')+'</textarea></div>'
     +'<div class="form-row"><div class="form-group"><label>股权结构及实控人</label><textarea id="f_equityStructure">'+esc(data.equityStructure||'')+'</textarea></div><div class="form-group"><label>核心人员</label><textarea id="f_keyPersonnel">'+esc(data.keyPersonnel||'')+'</textarea></div></div>'
@@ -1441,6 +1457,43 @@ $('detailOverlay')?.addEventListener('click', function(e) { if (e.target===this)
     if (!document.hidden) refreshFromServer();
   }, 30000);
 })();
+
+/* 横向滑动 */
+function scrollTable(btnWrap, dir) {
+  var tw = btnWrap.parentNode.querySelector('.table-wrap');
+  if (!tw) return;
+  tw.scrollBy({ left: dir * 350, behavior: 'smooth' });
+  setTimeout(function(){ updateScrollButtons(tw, btnWrap); }, 360);
+}
+function updateScrollButtons(tw, btnWrap) {
+  if (!tw || !btnWrap) return;
+  var btns = btnWrap.querySelectorAll('.scroll-btn');
+  if (btns.length < 2) return;
+  btns[0].classList.toggle('disabled', tw.scrollLeft <= 0);
+  btns[1].classList.toggle('disabled', tw.scrollLeft + tw.clientWidth >= tw.scrollWidth - 2);
+}
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.table-wrap').forEach(function(tw){
+    tw.addEventListener('scroll', function(){
+      var bw = this.parentNode.querySelector('.scroll-btn-wrap');
+      if (bw) updateScrollButtons(this, bw);
+    });
+  });
+});
+/* 收入利润年度模板（自动按当前年份更新） */
+function getRevenueProfitTemplate() {
+  var now = new Date();
+  var y = now.getFullYear();
+  var y1 = y - 2, y2 = y - 1;
+  return '营收：' + y1 + '年度___万元、' + y2 + '年度___万元、' + y + '年1-' + (now.getMonth()+1) + '月___万元；\n净利润：' + y1 + '年度___万元、' + y2 + '年度___万元、' + y + '年1-' + (now.getMonth()+1) + '月___万元';
+}
+function insertRevenueTemplate() {
+  var ta = document.getElementById('f_revenueProfit');
+  if (!ta) return;
+  var tpl = getRevenueProfitTemplate();
+  ta.value = ta.value ? ta.value + '\n' + tpl : tpl;
+  ta.focus();
+}
 </script>
 </body>
 </html>
