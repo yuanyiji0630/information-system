@@ -125,7 +125,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); disp
 .stat-card.accent-amber .value { color: var(--warning); }
 .table-wrap { background: var(--surface); border-radius: var(--radius-md); border: 1px solid var(--border); overflow-x: auto; box-shadow: var(--shadow-sm); transition: box-shadow var(--transition-normal); }
 .table-wrap:hover { box-shadow: var(--shadow); }
-.table-wrap table { min-width:100%; border-collapse: separate; border-spacing: 0; }
+.table-wrap table { width:100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; }
 .table-wrap th { background: var(--bg-secondary); padding: 12px 16px; text-align: left; font-weight: 600; font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid var(--border); white-space: nowrap; position: sticky; top: 0; z-index: 2; cursor: pointer; user-select: none; transition: background var(--transition-fast); }
 .table-wrap th:hover { background: #f1f5f9; color: var(--text); }
 .table-wrap th .sort-arrow { font-size: 9px; margin-left: 4px; opacity: 0.3; transition: opacity var(--transition-fast); }
@@ -775,7 +775,7 @@ function renderProcesses(area) {
     {key:'month',label:'月份',type:'values',values:['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']},
     {key:'progress',label:'进度',type:'values',values:PROGRESS_OPTIONS}
   ], state.data.processes);
-  h += '<div class="table-wrap"><table style="min-width:2000px"><thead><tr>';
+  h += '<div class="table-wrap"><table style="width:2000px"><thead><tr>';
   h += '<th style="width:40px">序号</th><th class="th-sticky" style="position:sticky;left:40px;width:140px">公司名称</th><th style="width:90px">拜访时间</th><th style="width:75px">进度</th><th style="width:80px">项目来源</th><th style="width:80px">归属渠道</th><th style="width:70px">项目经理</th><th style="width:70px">风控经理</th><th style="width:50px">新客户</th><th style="width:55px">专精特新</th><th style="width:50px">光明区</th><th style="width:85px">放款银行</th><th style="width:90px">报送时间</th><th style="width:90px">尽调时间</th><th style="width:90px">审结时间</th><th style="width:85px">出函时间</th><th style="width:85px">放款日期</th><th style="width:85px">到期日</th><th style="width:75px">申请金额</th><th style="width:75px">过会金额</th><th style="width:75px">放款金额</th><th style="width:70px">担保费率</th><th style="width:80px">担保费收入</th><th style="width:80px">报银行</th>';
   h += '</tr></thead><tbody>';
   items.forEach((p, idx) => {
@@ -869,7 +869,7 @@ function renderLoans(area) {
     {key:'bank',label:'银行',type:'data',items:state.data.loans},
     {key:'riskController',label:'风控',type:'data',items:state.data.loans}
   ], state.data.loans);
-  h += '<div class="table-wrap"><table style="min-width:1100px"><thead><tr>';
+  h += '<div class="table-wrap"><table style="width:1100px"><thead><tr>';
   h += '<th class="th-sticky" style="position:sticky;left:0;width:130px">公司名称</th><th style="width:70px">金额(万)</th><th style="width:65px">月还(万)</th><th style="width:70px">保证金比例</th><th style="width:55px">保证金</th><th style="width:65px">已还(万)</th><th style="width:65px">敞口(万)</th><th style="width:70px">担保费率</th><th style="width:85px">放款时间</th><th style="width:85px">银行</th><th style="width:80px">支行</th><th style="width:50px">利率</th><th style="width:85px">到期日</th><th style="width:55px">风控</th><th style="width:80px">客户经理</th>';
   h += '</tr></thead><tbody>';
   items.forEach(p => {
@@ -1240,7 +1240,7 @@ function showForm(title, type, data={}) {
     +'<div class="form-group"><label>备注</label><textarea id="f_notes">'+esc(data.notes||'')+'</textarea></div>';
   } else if (type==='processes') {
     fields = '<div class="form-row"><div class="form-group"><label>公司名称 *</label><input id="f_companyName" value="'+escAttr(data.companyName||'')+'"></div><div class="form-group"><label>拜访时间</label><input id="f_visitDate" type="date" value="'+fmtDate(data.visitDate)+'"></div></div>'
-    +'<div class="form-row"><div class="form-group"><label>进度</label><select id="f_progress">'+PROGRESS_OPTIONS.map(o=>'<option value="'+o+'"'+(data.progress===o?' selected':'')+'>'+o+'</option>').join('')+'</select></div><div class="form-group"><label>项目来源</label><input id="f_projectSource" value="'+escAttr(data.projectSource||'')+'"></div></div>'
+    +'<div class="form-row"><div class="form-group"><label>进度</label><select id="f_progress">'+PROGRESS_OPTIONS.map(o=>'<option value="'+o+'"'+(data.progress===o?' selected':'')+'>'+o+'</option>').join('')+'</select></div><div class="form-group"><label>项目来源</label><select id="f_projectSource"><option value=""'+(data.projectSource==''?' selected':'')+'>请选择</option><option value="部门分配"'+(data.projectSource==='部门分配'?' selected':'')+'>部门分配</option><option value="袁晓玲"'+(data.projectSource==='袁晓玲'?' selected':'')+'>袁晓玲</option></select></div></div>'
     +'<div class="form-row"><div class="form-group"><label>归属渠道</label><input id="f_channel" value="'+escAttr(data.channel||'')+'"></div><div class="form-group"><label>项目经理</label><input id="f_projectManager" value="'+escAttr(data.projectManager||'')+'"></div></div>'
     +'<div class="form-row"><div class="form-group"><label>风控经理</label><input id="f_riskController" value="'+escAttr(data.riskController||'')+'"></div><div class="form-group"><label>报银行</label><input id="f_bankReport" value="'+escAttr(data.bankReport||'')+'"></div></div>'
     +'<div class="form-row form-row-check"><div class="form-group"><label>新客户</label><input type="checkbox" id="f_isNewClient"'+(data.isNewClient?' checked':'')+'></div><div class="form-group"><label>专精特新</label><input type="checkbox" id="f_isSRDI"'+(data.isSRDI?' checked':'')+'></div><div class="form-group"><label>光明区</label><input type="checkbox" id="f_isGuangming"'+(data.isGuangming?' checked':'')+'></div></div>'
