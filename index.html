@@ -257,6 +257,16 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); disp
 /* 公司名称：条件截断 */
 .td-company{white-space:nowrap;min-width:120px;}
 .td-company.no-trunc{max-width:none;white-space:nowrap;}
+/* 固定列：序号+公司名称 */
+.td-sticky{position:sticky;left:0;background:var(--surface);z-index:1;}
+.table-wrap th:nth-child(1){position:sticky;left:0;z-index:3;background:var(--bg-secondary);}
+.table-wrap th:nth-child(2){position:sticky;left:40px;z-index:3;background:var(--bg-secondary);}
+.table-wrap td.td-sticky{position:sticky;left:40px;background:var(--surface);z-index:1;}
+.table-wrap tr:nth-child(even) td.td-sticky{background:var(--bg-secondary);}
+.table-wrap tr:hover td.td-sticky{background:var(--primary-light);}
+.table-wrap td:first-child{position:sticky;left:0;background:var(--surface);z-index:1;}
+.table-wrap tr:nth-child(even) td:first-child{background:var(--bg-secondary);}
+.table-wrap tr:hover td:first-child{background:var(--primary-light);}
 /* 年份/进度列完整展示 */
 .td-year{white-space:nowrap;min-width:50px;}
 .td-progress{white-space:nowrap;}
@@ -763,13 +773,15 @@ function renderProcesses(area) {
     {key:'progress',label:'进度',type:'values',values:PROGRESS_OPTIONS}
   ], state.data.processes);
   h += '<div class="table-wrap"><table><thead><tr>';
-  h += '<th style="width:40px">序号</th><th style="width:140px">项目全称</th><th style="width:80px">项目来源</th><th style="width:80px">归属渠道</th><th style="width:70px">项目经理</th><th style="width:70px">风控经理</th><th style="width:50px">新客户</th><th style="width:55px">专精特新</th><th style="width:50px">光明区</th><th style="width:85px">放款银行</th><th style="width:90px">报送时间</th><th style="width:90px">尽调时间</th><th style="width:90px">审结时间</th><th style="width:85px">出函时间</th><th style="width:85px">放款日期</th><th style="width:85px">到期日</th><th style="width:75px">申请金额</th><th style="width:75px">过会金额</th><th style="width:75px">放款金额</th><th style="width:70px">担保费率</th><th style="width:80px">担保费收入</th><th style="width:75px">上会</th><th style="width:75px">签合同</th><th style="width:80px">报银行</th><th style="width:85px">拜访时间</th><th style="width:70px">进度</th>';
+  h += '<th style="width:40px">序号</th><th style="width:140px">公司名称</th><th style="width:90px">拜访时间</th><th style="width:75px">进度</th><th style="width:80px">项目来源</th><th style="width:80px">归属渠道</th><th style="width:70px">项目经理</th><th style="width:70px">风控经理</th><th style="width:50px">新客户</th><th style="width:55px">专精特新</th><th style="width:50px">光明区</th><th style="width:85px">放款银行</th><th style="width:90px">报送时间</th><th style="width:90px">尽调时间</th><th style="width:90px">审结时间</th><th style="width:85px">出函时间</th><th style="width:85px">放款日期</th><th style="width:85px">到期日</th><th style="width:75px">申请金额</th><th style="width:75px">过会金额</th><th style="width:75px">放款金额</th><th style="width:70px">担保费率</th><th style="width:80px">担保费收入</th><th style="width:80px">报银行</th>';
   h += '</tr></thead><tbody>';
   items.forEach((p, idx) => {
     const bc = ['已放款','已结清'].includes(p.progress)?'success':['风控尽调','放款流程'].includes(p.progress)?'info':['风控暂缓','业务暂缓','客户意愿不足'].includes(p.progress)?'danger':'warning';
     h += '<tr ondblclick="editProcess(\''+p.id+'\')" oncontextmenu="confirmDelete(\'process\',\''+p.id+'\',\''+escAttr(p.companyName)+'\')">';
     h += '<td style="color:var(--text-hint);font-size:12px;text-align:center">'+(idx+1)+'</td>';
-    h += '<td><strong class="'+(p.companyName&&p.companyName.length<=15?'td-company no-trunc':'td-company')+'">' +esc(p.companyName)+'</strong></td>';
+    h += '<td class="td-sticky"><strong class="'+(p.companyName&&p.companyName.length<=15?'td-company no-trunc':'td-company')+'">' +esc(p.companyName)+'</strong></td>';
+    h += '<td>'+fmtDate(p.visitDate)+'</td>';
+    h += '<td class="td-progress">'+badge(bc,p.progress)+'</td>';
     h += '<td>'+esc(p.projectSource||'')+'</td>';
     h += '<td>'+esc(p.channel||'')+'</td>';
     h += '<td>'+esc(p.projectManager||'')+'</td>';
@@ -789,16 +801,14 @@ function renderProcesses(area) {
     h += '<td>'+fmt(p.loanAmount)+'</td>';
     h += '<td>'+fmt(p.premiumRate)+'</td>';
     h += '<td>'+fmt(p.premiumIncome)+'</td>';
-    h += '<td>'+fmtDate(p.committeeDate)+'</td>';
-    h += '<td>'+fmtDate(p.contractDate)+'</td>';
     h += '<td>'+esc(p.bankReport)+'</td>';
-    h += '<td>'+fmtDate(p.visitDate)+'</td>';
-    h += '<td class="td-progress">'+badge(bc,p.progress)+'</td>';
     h += '</tr>';
   });
   h += '</tbody></table></div>';
+  h += '<div class="scroll-btn-wrap"><button class="scroll-btn" onclick="scrollTable(this.parentNode,-1)" title="向左滑动">&#9664;</button><button class="scroll-btn" onclick="scrollTable(this.parentNode,1)" title="向右滑动">&#9654;</button></div>';
   h += '<div class="bottom-summary">共 <strong>'+items.length+'</strong> 条记录</div>';
   area.innerHTML = h;
+  setTimeout(function(){ var tw=area.querySelector('.table-wrap'); var bw=area.querySelector('.scroll-btn-wrap'); if(tw&&bw) updateScrollButtons(tw,bw); }, 80);
 }
 
 /* ===== Module 3: Loans ===== */
@@ -964,8 +974,10 @@ function renderJournals(area) {
     h += '</tr>';
   });
   h += '</tbody></table></div>';
+  h += '<div class="scroll-btn-wrap"><button class="scroll-btn" onclick="scrollTable(this.parentNode,-1)" title="向左滑动">&#9664;</button><button class="scroll-btn" onclick="scrollTable(this.parentNode,1)" title="向右滑动">&#9654;</button></div>';
   h += '<div class="bottom-summary">共 <strong>'+items.length+'</strong> 条记录</div>';
   area.innerHTML = h;
+  setTimeout(function(){ var tw=area.querySelector('.table-wrap'); var bw=area.querySelector('.scroll-btn-wrap'); if(tw&&bw) updateScrollButtons(tw,bw); }, 80);
 }
 
 /* ===== Module 5: Performance ===== */
@@ -1112,11 +1124,13 @@ function renderPerformance(area) {
     h += '<tr><td colspan="8" style="text-align:center;color:var(--text-hint);padding:30px">暂无' + year + '年业绩数据<br><small>在「放款管理」中新增当年放款后自动同步</small></td></tr>';
   }
   h += '</tbody></table></div>';
+  h += '<div class="scroll-btn-wrap"><button class="scroll-btn" onclick="scrollTable(this.parentNode,-1)" title="向左滑动">&#9664;</button><button class="scroll-btn" onclick="scrollTable(this.parentNode,1)" title="向右滑动">&#9654;</button></div>';
 
   area.innerHTML = h;
 
   // 年度目标 + 担保费目标点击编辑
   setTimeout(() => {
+    var tw=area.querySelector('.table-wrap'); var bw=area.querySelector('.scroll-btn-wrap'); if(tw&&bw) updateScrollButtons(tw,bw);
     const card = $('perfTargetCard');
     if (card) {
       card.onclick = function() {
@@ -1222,16 +1236,16 @@ function showForm(title, type, data={}) {
     +'<div class="form-group"><label>关联企业</label><textarea id="f_relatedCompanies">'+esc(data.relatedCompanies||'')+'</textarea></div>'
     +'<div class="form-group"><label>备注</label><textarea id="f_notes">'+esc(data.notes||'')+'</textarea></div>';
   } else if (type==='processes') {
-    fields = '<div class="form-row"><div class="form-group"><label>项目全称 *</label><input id="f_companyName" value="'+escAttr(data.companyName||'')+'"></div><div class="form-group"><label>项目来源</label><input id="f_projectSource" value="'+escAttr(data.projectSource||'')+'"></div></div>'
+    fields = '<div class="form-row"><div class="form-group"><label>公司名称 *</label><input id="f_companyName" value="'+escAttr(data.companyName||'')+'"></div><div class="form-group"><label>拜访时间</label><input id="f_visitDate" type="date" value="'+fmtDate(data.visitDate)+'"></div></div>'
+    +'<div class="form-row"><div class="form-group"><label>进度</label><select id="f_progress">'+PROGRESS_OPTIONS.map(o=>'<option value="'+o+'"'+(data.progress===o?' selected':'')+'>'+o+'</option>').join('')+'</select></div><div class="form-group"><label>项目来源</label><input id="f_projectSource" value="'+escAttr(data.projectSource||'')+'"></div></div>'
     +'<div class="form-row"><div class="form-group"><label>归属渠道</label><input id="f_channel" value="'+escAttr(data.channel||'')+'"></div><div class="form-group"><label>项目经理</label><input id="f_projectManager" value="'+escAttr(data.projectManager||'')+'"></div></div>'
-    +'<div class="form-row"><div class="form-group"><label>风控经理</label><input id="f_riskController" value="'+escAttr(data.riskController||'')+'"></div><div class="form-group"><label>进度</label><select id="f_progress">'+PROGRESS_OPTIONS.map(o=>'<option value="'+o+'"'+(data.progress===o?' selected':'')+'>'+o+'</option>').join('')+'</select></div></div>'
+    +'<div class="form-row"><div class="form-group"><label>风控经理</label><input id="f_riskController" value="'+escAttr(data.riskController||'')+'"></div><div class="form-group"><label>报银行</label><input id="f_bankReport" value="'+escAttr(data.bankReport||'')+'"></div></div>'
     +'<div class="form-row form-row-check"><div class="form-group"><label>新客户</label><input type="checkbox" id="f_isNewClient"'+(data.isNewClient?' checked':'')+'></div><div class="form-group"><label>专精特新</label><input type="checkbox" id="f_isSRDI"'+(data.isSRDI?' checked':'')+'></div><div class="form-group"><label>光明区</label><input type="checkbox" id="f_isGuangming"'+(data.isGuangming?' checked':'')+'></div></div>'
-    +'<div class="form-row"><div class="form-group"><label>放款银行</label><input id="f_loanBank" value="'+escAttr(data.loanBank||'')+'"></div><div class="form-group"><label>拜访时间</label><input id="f_visitDate" type="date" value="'+fmtDate(data.visitDate)+'"></div></div>'
+    +'<div class="form-row"><div class="form-group"><label>放款银行</label><input id="f_loanBank" value="'+escAttr(data.loanBank||'')+'"></div><div class="form-group"><label>担保费率(%)</label><input id="f_premiumRate" value="'+escAttr(data.premiumRate||'')+'"></div></div>'
     +'<div class="form-row-3"><div class="form-group"><label>报送时间</label><input id="f_emailDate" type="date" value="'+fmtDate(data.emailDate)+'"></div><div class="form-group"><label>尽调时间</label><input id="f_ddDate" type="date" value="'+fmtDate(data.ddDate)+'"></div><div class="form-group"><label>审结时间</label><input id="f_reviewDate" type="date" value="'+fmtDate(data.reviewDate)+'"></div></div>'
     +'<div class="form-row-3"><div class="form-group"><label>出函时间</label><input id="f_letterDate" type="date" value="'+fmtDate(data.letterDate)+'"></div><div class="form-group"><label>放款日期</label><input id="f_loanRelease" value="'+escAttr(data.loanRelease||'')+'"></div><div class="form-group"><label>到期日</label><input id="f_maturityDate" type="date" value="'+fmtDate(data.maturityDate)+'"></div></div>'
     +'<div class="form-row-3"><div class="form-group"><label>申请金额(万)</label><input id="f_applyAmount" type="number" step="0.01" value="'+fmt(data.applyAmount)+'"></div><div class="form-group"><label>过会金额(万)</label><input id="f_approvedAmount" type="number" step="0.01" value="'+fmt(data.approvedAmount)+'"></div><div class="form-group"><label>放款金额(万)</label><input id="f_loanAmount" type="number" step="0.01" value="'+fmt(data.loanAmount)+'"></div></div>'
-    +'<div class="form-row-3"><div class="form-group"><label>担保费率(%)</label><input id="f_premiumRate" value="'+escAttr(data.premiumRate||'')+'"></div><div class="form-group"><label>担保费收入(万)</label><input id="f_premiumIncome" type="number" step="0.01" value="'+fmt(data.premiumIncome)+'"></div><div class="form-group"><label>报银行</label><input id="f_bankReport" value="'+escAttr(data.bankReport||'')+'"></div></div>'
-    +'<div class="form-row-3"><div class="form-group"><label>上会时间</label><input id="f_committeeDate" type="date" value="'+fmtDate(data.committeeDate)+'"></div><div class="form-group"><label>签合同</label><input id="f_contractDate" type="date" value="'+fmtDate(data.contractDate)+'"></div><div class="form-group"></div></div>';
+    +'<div class="form-row-3"><div class="form-group"><label>担保费收入(万)</label><input id="f_premiumIncome" type="number" step="0.01" value="'+fmt(data.premiumIncome)+'"></div><div class="form-group"></div><div class="form-group"></div></div>';
   } else if (type==='loans') {
     fields = '<div class="form-row"><div class="form-group"><label>公司名称 *</label><input id="f_companyName" value="'+escAttr(data.companyName||'')+'"></div><div class="form-group"><label>金额(万元) *</label><input id="f_amount" type="number" step="0.01" value="'+fmt(data.amount)+'"></div></div>'
     +'<div class="form-row-3"><div class="form-group"><label>月还(万元)</label><input id="f_monthlyRepay" type="number" step="0.01" value="'+fmt(data.monthlyRepay)+'"></div><div class="form-group"><label>保证金比例(%)</label><input id="f_deposit" type="number" step="0.01" value="'+fmt(data.deposit)+'" placeholder="如10%填10"></div><div class="form-group"><label>已还(万元)</label><input id="f_repaid" type="number" step="0.01" value="'+fmt(data.repaid)+'"></div></div>'
@@ -1268,7 +1282,7 @@ function saveForm(type) {
     if (!obj.companyName.trim()) { toast('请输入公司名称','error'); return; }
     state.data.projects = state.editingId ? state.data.projects.map(x=>x.id===state.editingId?obj:x) : [...state.data.projects, obj];
   } else if (type==='processes') {
-    obj = { id:state.editingId||genId(), companyName:g('f_companyName'), projectSource:g('f_projectSource'), channel:g('f_channel'), projectManager:g('f_projectManager'), riskController:g('f_riskController'), isNewClient:document.getElementById('f_isNewClient')?.checked||false, isSRDI:document.getElementById('f_isSRDI')?.checked||false, isGuangming:document.getElementById('f_isGuangming')?.checked||false, loanBank:g('f_loanBank'), visitDate:g('f_visitDate'), progress:g('f_progress'), emailDate:g('f_emailDate'), ddDate:g('f_ddDate'), reviewDate:g('f_reviewDate'), letterDate:g('f_letterDate'), loanRelease:g('f_loanRelease'), maturityDate:g('f_maturityDate'), applyAmount:g('f_applyAmount'), approvedAmount:g('f_approvedAmount'), loanAmount:g('f_loanAmount'), premiumRate:g('f_premiumRate'), premiumIncome:g('f_premiumIncome'), bankReport:g('f_bankReport'), committeeDate:g('f_committeeDate'), contractDate:g('f_contractDate'), createdAt:state.editingId?(state.data.processes.find(x=>x.id===state.editingId)?.createdAt||new Date().toISOString()):new Date().toISOString(), updatedAt:new Date().toISOString() };
+    obj = { id:state.editingId||genId(), companyName:g('f_companyName'), visitDate:g('f_visitDate'), progress:g('f_progress'), projectSource:g('f_projectSource'), channel:g('f_channel'), projectManager:g('f_projectManager'), riskController:g('f_riskController'), bankReport:g('f_bankReport'), isNewClient:document.getElementById('f_isNewClient')?.checked||false, isSRDI:document.getElementById('f_isSRDI')?.checked||false, isGuangming:document.getElementById('f_isGuangming')?.checked||false, loanBank:g('f_loanBank'), premiumRate:g('f_premiumRate'), emailDate:g('f_emailDate'), ddDate:g('f_ddDate'), reviewDate:g('f_reviewDate'), letterDate:g('f_letterDate'), loanRelease:g('f_loanRelease'), maturityDate:g('f_maturityDate'), applyAmount:g('f_applyAmount'), approvedAmount:g('f_approvedAmount'), loanAmount:g('f_loanAmount'), premiumIncome:g('f_premiumIncome'), createdAt:state.editingId?(state.data.processes.find(x=>x.id===state.editingId)?.createdAt||new Date().toISOString()):new Date().toISOString(), updatedAt:new Date().toISOString() };
     if (!obj.companyName.trim()) { toast('请输入公司名称','error'); return; }
     state.data.processes = state.editingId ? state.data.processes.map(x=>x.id===state.editingId?obj:x) : [...state.data.processes, obj];
     // 自动在项目概况新增同名公司（不检查是否已存在）
@@ -1426,7 +1440,7 @@ function exportCSV(filtered) {
   const t = state.currentTab;
   let items, hdr, keys;
   if (t==='projects') { hdr=['公司名称','主营及模式','人员场地','收入利润','供产销','关键财务','贷款规模','融资历程','股权结构','核心人员','关联企业','备注']; keys=['companyName','businessModel','personnelSite','revenueProfit','supplyChain','keyFinance','loanScale','financingHistory','equityStructure','keyPersonnel','relatedCompanies','notes']; items=filtered?state.filteredItems:state.data.projects; }
-  else if (t==='processes') { hdr=['项目全称','项目来源','归属渠道','项目经理','风控经理','新客户','专精特新','光明区','放款银行','报送时间','尽调时间','审结时间','出函时间','放款日期','到期日','申请金额','过会金额','放款金额','担保费率','担保费收入','上会','签合同','报银行','拜访时间','进度']; keys=['companyName','projectSource','channel','projectManager','riskController','isNewClient','isSRDI','isGuangming','loanBank','emailDate','ddDate','reviewDate','letterDate','loanRelease','maturityDate','applyAmount','approvedAmount','loanAmount','premiumRate','premiumIncome','committeeDate','contractDate','bankReport','visitDate','progress']; items=filtered?state.filteredItems:state.data.processes; }
+  else if (t==='processes') { hdr=['公司名称','拜访时间','进度','项目来源','归属渠道','项目经理','风控经理','新客户','专精特新','光明区','放款银行','报送时间','尽调时间','审结时间','出函时间','放款日期','到期日','申请金额','过会金额','放款金额','担保费率','担保费收入','报银行']; keys=['companyName','visitDate','progress','projectSource','channel','projectManager','riskController','isNewClient','isSRDI','isGuangming','loanBank','emailDate','ddDate','reviewDate','letterDate','loanRelease','maturityDate','applyAmount','approvedAmount','loanAmount','premiumRate','premiumIncome','bankReport']; items=filtered?state.filteredItems:state.data.processes; }
   else if (t==='loans') { hdr=['公司名称','金额(万)','月还(万)','保证金比例(%)','保证金(万)','已还(万)','敞口(万)','担保费率','放款时间','银行','支行','利率','到期日','还款日','风控','客户经理','联系人']; keys=['companyName','amount','monthlyRepay','deposit','','repaid','','premium','loanDate','bank','branch','interestRate','maturityDate','repayDate','riskController','bankManager','contact']; items=filtered?state.filteredItems:state.data.loans; }
   else if (t==='journals') { hdr=['日期','事项','客户','银行','备注']; keys=['date','matter','client','bank','notes']; items=filtered?state.filteredItems:state.data.journals; }
   else { toast('此模块暂不支持Excel导出','error'); return; }
