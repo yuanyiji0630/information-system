@@ -797,7 +797,7 @@ function renderProcesses(area) {
     h += '<td>'+fmtDate(p.reviewDate)+'</td>';
     h += '<td>'+fmtDate(p.letterDate)+'</td>';
     h += '<td>'+esc(p.loanRelease)+'</td>';
-    h += '<td>'+fmtDate(p.maturityDate)+'</td>';
+    h += '<td>'+fmtDate(p.maturityDate)+'</td>'; h += '<td>'+fmtDate(p.settledDate)+'</td>';
     h += '<td>'+fmt(p.applyAmount)+'</td>';
     h += '<td>'+fmt(p.approvedAmount)+'</td>';
     h += '<td>'+fmt(p.loanAmount)+'</td>';
@@ -869,7 +869,7 @@ function renderLoans(area) {
     {key:'riskController',label:'风控',type:'data',items:state.data.loans}
   ], state.data.loans);
   h += '<div class="table-wrap"><table style="width:1100px"><thead><tr>';
-  h += '<th class="th-sticky" style="position:sticky;left:0;width:130px">公司名称</th><th style="width:70px">金额(万)</th><th style="width:65px">月还(万)</th><th style="width:70px">保证金比例</th><th style="width:55px">保证金</th><th style="width:65px">已还(万)</th><th style="width:65px">敞口(万)</th><th style="width:70px">担保费率</th><th style="width:85px">放款时间</th><th style="width:85px">银行</th><th style="width:80px">支行</th><th style="width:50px">利率</th><th style="width:85px">到期日</th><th style="width:55px">风控</th><th style="width:80px">客户经理</th>';
+  h += '<th class="th-sticky" style="position:sticky;left:0;width:130px">公司名称</th><th style="width:70px">金额(万)</th><th style="width:65px">月还(万)</th><th style="width:70px">保证金比例</th><th style="width:55px">保证金</th><th style="width:65px">已还(万)</th><th style="width:65px">敞口(万)</th><th style="width:70px">担保费率</th><th style="width:85px">放款时间</th><th style="width:85px">银行</th><th style="width:80px">支行</th><th style="width:50px">利率</th><th style="width:85px">到期日</th><th style="width:85px">结清日期</th><th style="width:55px">风控</th><th style="width:80px">客户经理</th>';
   h += '</tr></thead><tbody>';
   items.forEach(p => {
     const a=parseFloat(p.amount)||0, depositPct=parseFloat(p.deposit)||0;
@@ -897,7 +897,7 @@ function renderLoans(area) {
     h += '<td>'+esc(p.bank)+'</td>';
     h += '<td>'+esc(trunc(p.branch,10))+'</td>';
     h += '<td>'+fmtPct(p.interestRate)+'</td>';
-    h += '<td>'+fmtDate(p.maturityDate)+'</td>';
+    h += '<td>'+fmtDate(p.maturityDate)+'</td>'; h += '<td>'+fmtDate(p.settledDate)+'</td>';
     h += '<td>'+esc(p.riskController)+'</td>';
     h += '<td>'+esc(trunc(p.bankManager,8))+'</td>';
     h += '</tr>';
@@ -1253,7 +1253,7 @@ function showForm(title, type, data={}) {
     +'<div class="form-row-3"><div class="form-group"><label>月还(万元)</label><input id="f_monthlyRepay" type="number" step="0.01" value="'+fmt(data.monthlyRepay)+'"></div><div class="form-group"><label>保证金比例(%)</label><input id="f_deposit" type="number" step="0.01" value="'+fmt(data.deposit)+'" placeholder="如10%填10"></div><div class="form-group"><label>已还(万元)</label><input id="f_repaid" type="number" step="0.01" value="'+fmt(data.repaid)+'"></div></div>'
     +'<div class="form-row-3"><div class="form-group"><label>担保费率(%)</label><input id="f_premium" value="'+escAttr(data.premium||'')+'" placeholder="如2.5%填2.5"></div><div class="form-group"><label>保证金账号</label><input id="f_depositAccount" value="'+escAttr(data.depositAccount||'')+'"></div><div class="form-group"><label>缴存日期</label><input id="f_depositDate" type="date" value="'+fmtDate(data.depositDate)+'"></div></div>'
     +'<div class="form-row-3"><div class="form-group"><label>放款时间 *</label><input id="f_loanDate" type="date" value="'+fmtDate(data.loanDate)+'"></div><div class="form-group"><label>放款银行</label><input id="f_bank" value="'+escAttr(data.bank||'')+'"></div><div class="form-group"><label>支行</label><input id="f_branch" value="'+escAttr(data.branch||'')+'"></div></div>'
-    +'<div class="form-row-3"><div class="form-group"><label>利率</label><input id="f_interestRate" value="'+escAttr(data.interestRate||'')+'"></div><div class="form-group"><label>到期日</label><input id="f_maturityDate" type="date" value="'+fmtDate(data.maturityDate)+'"></div><div class="form-group"><label>月还跟进</label><input id="f_monthlyFollow" value="'+escAttr(data.monthlyFollow||'')+'"></div></div>'
+    +'<div class="form-row-3"><div class="form-group"><label>利率</label><input id="f_interestRate" value="'+escAttr(data.interestRate||'')+'"></div><div class="form-group"><label>到期日</label><input id="f_maturityDate" type="date" value="'+fmtDate(data.maturityDate)+'"></div><div class="form-group"><label>结清日期</label><input id="f_settledDate" type="date" value="'+fmtDate(data.settledDate||data.maturityDate)+'"></div></div>'
     +'<div class="form-row-3"><div class="form-group"><label>贷后跟进日期</label><input id="f_postLoanDate" type="date" value="'+fmtDate(data.postLoanDate)+'"></div><div class="form-group"><label>风控</label><input id="f_riskController" value="'+escAttr(data.riskController||'')+'"></div><div class="form-group"><label>客户经理</label><input id="f_bankManager" value="'+escAttr(data.bankManager||'')+'"></div></div>'
     +'<div class="form-row"><div class="form-group"><label>电话</label><input id="f_phone" value="'+escAttr(data.phone||'')+'"></div><div class="form-group"><label>联系人</label><input id="f_contact" value="'+escAttr(data.contact||'')+'"></div></div>';
   } else if (type==='journals') {
@@ -1292,7 +1292,7 @@ function saveForm(type) {
       state.data.projects.push({ id:genId(), companyName:obj.companyName, businessModel:'', personnelSite:'', revenueProfit:'', supplyChain:'', keyFinance:'', loanScale:'', financingHistory:'', equityStructure:'', keyPersonnel:'', relatedCompanies:'', notes:'', createdAt:new Date().toISOString(), updatedAt:new Date().toISOString() });
     }
   } else if (type==='loans') {
-    obj = { id:state.editingId||genId(), companyName:g('f_companyName'), amount:g('f_amount'), monthlyRepay:g('f_monthlyRepay'), deposit:g('f_deposit'), depositDate:g('f_depositDate'), depositAccount:g('f_depositAccount'), repaid:g('f_repaid'), premium:g('f_premium'), loanDate:g('f_loanDate'), bank:g('f_bank'), branch:g('f_branch'), interestRate:g('f_interestRate'), maturityDate:g('f_maturityDate'), monthlyFollow:g('f_monthlyFollow'), postLoanDate:g('f_postLoanDate'), riskController:g('f_riskController'), bankManager:g('f_bankManager'), phone:g('f_phone'), contact:g('f_contact') };
+    obj = { id:state.editingId||genId(), companyName:g('f_companyName'), amount:g('f_amount'), monthlyRepay:g('f_monthlyRepay'), deposit:g('f_deposit'), depositDate:g('f_depositDate'), depositAccount:g('f_depositAccount'), repaid:g('f_repaid'), premium:g('f_premium'), loanDate:g('f_loanDate'), bank:g('f_bank'), branch:g('f_branch'), interestRate:g('f_interestRate'), maturityDate:g('f_maturityDate'), settledDate:g('f_settledDate'), monthlyFollow:g('f_monthlyFollow'), postLoanDate:g('f_postLoanDate'), riskController:g('f_riskController'), bankManager:g('f_bankManager'), phone:g('f_phone'), contact:g('f_contact') };
     if (!obj.companyName.trim()) { toast('请输入公司名称','error'); return; }
     state.data.loans = state.editingId ? state.data.loans.map(x=>x.id===state.editingId?obj:x) : [...state.data.loans, obj];
     // 自动同步到业绩统计
@@ -1344,7 +1344,7 @@ function exportAllXLSX() {
   const sheets = [
     { name:'项目概况', hdr:['公司名称','主营及模式','人员场地','收入利润','供产销','关键财务','贷款规模','融资历程','股权结构','核心人员','关联企业','备注'], keys:['companyName','businessModel','personnelSite','revenueProfit','supplyChain','keyFinance','loanScale','financingHistory','equityStructure','keyPersonnel','relatedCompanies','notes'], items:state.data.projects },
     { name:'项目跟进', hdr:['公司名称','年份','拜访时间','进度','主跟风控','报风控','尽调','审结','上会','签合同','报银行','放款'], keys:['companyName','year','visitDate','progress','riskController','emailDate','ddDate','reviewDate','committeeDate','contractDate','bankReport','loanRelease'], items:state.data.processes },
-    { name:'放款管理', hdr:['公司名称','金额(万)','月还(万)','保证金比例(%)','保证金(万)','已还(万)','敞口(万)','担保费率','放款时间','银行','支行','利率','到期日','风控','客户经理','联系人'], keys:['companyName','amount','monthlyRepay','deposit','','repaid','','premium','loanDate','bank','branch','interestRate','maturityDate','riskController','bankManager','contact'], items:state.data.loans },
+    { name:'放款管理', hdr:['公司名称','金额(万)','月还(万)','保证金比例(%)','保证金(万)','已还(万)','敞口(万)','担保费率','放款时间','银行','支行','利率','到期日','结清日期','风控','客户经理','联系人'], keys:['companyName','amount','monthlyRepay','deposit','','repaid','','premium','loanDate','bank','branch','interestRate','maturityDate','settledDate','riskController','bankManager','contact'], items:state.data.loans },
     { name:'工作记录', hdr:['日期','事项','客户','银行','备注'], keys:['date','matter','client','bank','notes'], items:state.data.journals }
   ];
 
@@ -1443,7 +1443,7 @@ function exportCSV(filtered) {
   let items, hdr, keys;
   if (t==='projects') { hdr=['公司名称','主营及模式','人员场地','收入利润','供产销','关键财务','贷款规模','融资历程','股权结构','核心人员','关联企业','备注']; keys=['companyName','businessModel','personnelSite','revenueProfit','supplyChain','keyFinance','loanScale','financingHistory','equityStructure','keyPersonnel','relatedCompanies','notes']; items=filtered?state.filteredItems:state.data.projects; }
   else if (t==='processes') { hdr=['公司名称','拜访时间','进度','项目来源','归属渠道','风控经理','新客户','专精特新','光明区','放款银行','报送时间','尽调时间','审结时间','出函时间','放款日期','到期日','申请金额','过会金额','放款金额','担保费率','担保费收入','报银行']; keys=['companyName','visitDate','progress','projectSource','channel','riskController','isNewClient','isSRDI','isGuangming','loanBank','emailDate','ddDate','reviewDate','letterDate','loanRelease','maturityDate','applyAmount','approvedAmount','loanAmount','premiumRate','premiumIncome','bankReport']; items=filtered?state.filteredItems:state.data.processes; }
-  else if (t==='loans') { hdr=['公司名称','金额(万)','月还(万)','保证金比例(%)','保证金(万)','已还(万)','敞口(万)','担保费率','放款时间','银行','支行','利率','到期日','还款日','风控','客户经理','联系人']; keys=['companyName','amount','monthlyRepay','deposit','','repaid','','premium','loanDate','bank','branch','interestRate','maturityDate','repayDate','riskController','bankManager','contact']; items=filtered?state.filteredItems:state.data.loans; }
+  else if (t==='loans') { hdr=['公司名称','金额(万)','月还(万)','保证金比例(%)','保证金(万)','已还(万)','敞口(万)','担保费率','放款时间','银行','支行','利率','到期日','结清日期','还款日','风控','客户经理','联系人']; keys=['companyName','amount','monthlyRepay','deposit','','repaid','','premium','loanDate','bank','branch','interestRate','maturityDate','settledDate','repayDate','riskController','bankManager','contact']; items=filtered?state.filteredItems:state.data.loans; }
   else if (t==='journals') { hdr=['日期','事项','客户','银行','备注']; keys=['date','matter','client','bank','notes']; items=filtered?state.filteredItems:state.data.journals; }
   else { toast('此模块暂不支持Excel导出','error'); return; }
   let csv = '\uFEFF'+hdr.join(',')+'\n';
