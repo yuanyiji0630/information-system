@@ -7,7 +7,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval'; connect-src 'self' https://*.supabase.co; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'unsafe-inline'; media-src blob:">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval'; connect-src 'self' https://*.supabase.co; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'unsafe-inline'; img-src 'self' data: blob:; media-src blob:">
 <title>项目信息库</title>
 <style>
 :root {
@@ -306,7 +306,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); disp
       <button class="btn btn-sm" onclick="exportCSV(true)" title="导出当前筛选结果">导出筛选</button>
       <button class="btn btn-sm" onclick="exportCSV()" title="导出全部数据">导出全部</button>
       <button class="btn btn-sm btn-success" onclick="exportAllXLSX()" title="一键导出全部模块为Excel多Sheet文件">📊 全部导出</button>
-      <button class="btn btn-primary" id="btnAdd">＋ 新增</button>
+      <button class="btn btn-primary" id="btnAdd" onclick="addNew()">＋ 新增</button>
     </div>
   </div>
   <div class="content" id="contentArea"></div>
@@ -324,7 +324,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); disp
 'use strict';
 
 /* ===== Constants ===== */
-const APP_VERSION = '20260529_1'; // 更新文件时递增此版本号
+const APP_VERSION = '20261008_1'; // 更新文件时递增此版本号
 const VERSION_KEY = '_app_version';
 const STORAGE_KEY = 'project_db_v3';
 const PW_KEY = 'perf_pw_v1';
@@ -345,7 +345,7 @@ function genId() { return 'id_'+Date.now()+'_'+Math.random().toString(36).substr
 function fmt(v) { return v == null ? '' : String(v); }
 function fmtDate(d) { if (!d) return ''; const dt = new Date(d); if (isNaN(dt.getTime())) return fmt(d); return dt.getFullYear()+'-'+(dt.getMonth()+1).toString().padStart(2,'0')+'-'+dt.getDate().toString().padStart(2,'0'); }
 function esc(s) { return s == null ? '' : String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function escAttr(s) { return s == null ? '' : String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;'); }
+function escAttr(s) { return s == null ? '' : String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 function trunc(s, n) { if (!s) return ''; s = String(s); return s.length > n ? s.substring(0,n)+'...' : s; }
 function badge(c, t) { return '<span class="badge badge-'+c+'">'+esc(t)+'</span>'; }
 function num(v) { const n = parseFloat(v); return isNaN(n) ? '0' : n.toLocaleString(); }
@@ -1331,11 +1331,16 @@ window.confirmDelete = function(type, id, name) {
 };
 
 /* ===== Add Button ===== */
-$('btnAdd').addEventListener('click', function() {
-  state.editingId = null;
-  const titles = {projects:'新增项目',processes:'新增项目跟进',loans:'新增放款',journals:'新增记录'};
-  showForm(titles[state.currentTab]||'新增', state.currentTab, {});
-});
+function addNew() {
+  try {
+    state.editingId = null;
+    const titles = {projects:'新增项目',processes:'新增项目跟进',loans:'新增放款',journals:'新增记录'};
+    showForm(titles[state.currentTab]||'新增', state.currentTab, {});
+  } catch(e) {
+    console.error('[addNew] 新增失败:', e);
+    toast('新增失败：' + e.message, 'error');
+  }
+}
 
 /* ===== Search ===== */
 $('searchInput').addEventListener('input', render);
@@ -1468,16 +1473,15 @@ $('detailOverlay')?.addEventListener('click', function(e) { if (e.target===this)
 
 /* ===== Init ===== */
 (async function() {
-  // 浏览器缓存自检
+  // 浏览器缓存自检：检测到旧版本则自动强制刷新一次，确保加载最新代码
   const lastVer = localStorage.getItem(VERSION_KEY);
   const curVer = 'v' + APP_VERSION;
   if (lastVer && lastVer !== curVer) {
-    console.warn('[cache] 检测到浏览器缓存了旧版本文件 (' + lastVer + ')，当前版本为 ' + curVer);
-    console.warn('[cache] 请按 Ctrl+Shift+R (Mac: Cmd+Shift+R) 强制刷新以加载最新版本');
-  }
-  if (!lastVer || lastVer !== curVer) {
     localStorage.setItem(VERSION_KEY, curVer);
+    location.reload();
+    return;
   }
+  localStorage.setItem(VERSION_KEY, curVer);
 
   await loadData();
   updateBadges();
