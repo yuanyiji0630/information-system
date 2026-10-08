@@ -123,7 +123,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); disp
 .stat-card.accent-green .value { color: var(--success); }
 .stat-card.accent-purple .value { color: var(--purple); }
 .stat-card.accent-amber .value { color: var(--warning); }
-.table-wrap { background: var(--surface); border-radius: var(--radius-md); border: 1px solid var(--border); overflow-x: auto; box-shadow: var(--shadow-sm); transition: box-shadow var(--transition-normal); }
+.table-wrap { background: var(--surface); border-radius: var(--radius-md); border: 1px solid var(--border); overflow: auto; max-height: calc(100vh - 320px); box-shadow: var(--shadow-sm); transition: box-shadow var(--transition-normal); }
 .table-wrap:hover { box-shadow: var(--shadow); }
 .table-wrap table { width:100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; }
 .table-wrap th { background: var(--bg-secondary); padding: 12px 16px; text-align: left; font-weight: 600; font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid var(--border); white-space: nowrap; position: sticky; top: 0; z-index: 2; cursor: pointer; user-select: none; transition: background var(--transition-fast); }
@@ -225,7 +225,6 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); disp
 .bottom-summary strong { color: var(--text); font-weight: 700; }
 .project-row { cursor: pointer; }
 .project-row:hover td { background: #f0f7ff !important; }
-.table-wrap th { position: relative; }
 .table-wrap th .resize-handle { position: absolute; top: 0; right: 0; width: 6px; height: 100%; cursor: col-resize; user-select: none; z-index: 3; }
 .table-wrap th .resize-handle:hover, .table-wrap th .resize-handle.resizing { background: rgba(37, 99, 235, 0.2); }
 .tfoot-row td { background: #f8fafc !important; font-weight: 700; border-top: 2px solid var(--border) !important; color: var(--text); font-size: 11px; }
